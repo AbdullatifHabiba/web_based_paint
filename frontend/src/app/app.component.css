@@ -1,0 +1,36 @@
+body{
+    background-image: linear-gradient( to bottom,green,rgb(119, 0, 255));
+    background-color: #f7e7e5;
+
+    background: auto;
+    height: 100%;
+    width: 100%;
+}
+#toolbar{
+  background-color: aqua;
+  position: fixed;
+  width: 100%;
+  height: auto;
+}
+#coloricon{
+border-radius:5ch
+
+}
+button{
+
+    width: 50px;
+    height: 50px;
+
+}
+canvas{
+    background-image: linear-gradient( to bottom,rgb(242, 253, 242),rgb(169, 151, 189));
+    background-color: #53a722;
+
+    width: 100%;
+    height: 500px;
+
+    position: relative;
+    top:20px;
+    cursor: pointer;
+
+}
