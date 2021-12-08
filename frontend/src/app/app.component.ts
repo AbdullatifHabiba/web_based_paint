@@ -11,34 +11,27 @@ import { HttpClient ,HttpErrorResponse,HttpParams} from '@angular/common/http';
 })
 export class AppComponent  implements AfterViewInit{
   title = 'webpaint';
-  constructor(private httpClient:HttpClient){}
+  constructor(private httpClient:HttpClient){
+
+  }
 
   @ViewChild('canvas',{static:true})
   mycanvas!: ElementRef<HTMLCanvasElement>;
-  public circle!: CanvasRenderingContext2D;
-  public line!: CanvasRenderingContext2D;
-  public rectangle!: CanvasRenderingContext2D;
-  public triangle!: CanvasRenderingContext2D;
-  public elipse!: CanvasRenderingContext2D;
+
   public Square!: CanvasRenderingContext2D;
 
 
   color='';
-ngAfterViewInit(): void {
-  this.circle=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.line=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.rectangle=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.elipse=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.Square=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.triangle=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
-  this.redraw();
-  this.createUserEvents();
+
+ngAfterViewInit(): void {this.Square=<CanvasRenderingContext2D>this.mycanvas.nativeElement.getContext("2d");
+this.mycanvas.nativeElement.width=window.innerWidth;
+this.mycanvas.nativeElement.height=window.innerHeight;
 
 }
- startx=0;
+   startx=0;
    starty=0;
 
-
+      selectedshape:String='';
       private paint: boolean = false;
       private clickX: number[] = [];
       private clickY: number[] = [];
@@ -51,14 +44,11 @@ ngAfterViewInit(): void {
       let mouseX =  (e as MouseEvent).pageX;
       let mouseY = (e as MouseEvent).pageY;
       var rect = this.mycanvas.nativeElement.getBoundingClientRect();
-
-      mouseX -= rect.left;
-       mouseY -= rect.top;
-
+      mouseX -=rect.left;
+      mouseY -=rect.top;
       this.paint = true;
-      console.log(mouseX,mouseY)
       this.addClick(mouseX, mouseY, false);
-      this.redraw();
+
     }
 
     private dragEventHandler = (e: MouseEvent ) => {
@@ -66,13 +56,19 @@ ngAfterViewInit(): void {
       let mouseY =(e as MouseEvent).pageY;
      var rect = this.mycanvas.nativeElement.getBoundingClientRect();
 
-      mouseX -= rect.left;
-       mouseY -= rect.top;
+      mouseX -=rect.left;
+       mouseY -=rect.top;
 
 
       if (this.paint) {
+
           this.addClick(mouseX, mouseY, true);
-          this.redraw();
+          this.Square.clearRect(0,0,this.mycanvas.nativeElement.width,this.mycanvas.nativeElement.height);
+
+          this.redraw(this.selectedshape);
+
+          this.shapeslist.pop();
+          this.canvasships.pop();
       }
 
       e.preventDefault();
@@ -84,18 +80,28 @@ ngAfterViewInit(): void {
     }
 
     public clearCanvas() {
-      this.Square.clearRect(0, 0, this.mycanvas.nativeElement.width, this.mycanvas.nativeElement.height);
+      this.mycanvas.nativeElement.width = this.mycanvas.nativeElement.width;
+
+      this.Square.clearRect(0,0,this.mycanvas.nativeElement.width,this.mycanvas.nativeElement.height);
+      this.canvasships=[];
+      this.shapeslist=[];
+
       this.clickX = [];
       this.clickY = [];
       this.clickDrag = [];
     }
     private clearEventHandler = () => {
-      this.clearCanvas();
+      this.clickX = [];
+      this.clickY = [];
+      this.clickDrag = [];
     }
 
     private releaseEventHandler = () => {
       this.paint = false;
-      this.redraw();
+      this.redraw(this.selectedshape);
+      this.Square.save()
+
+      this.clearEventHandler();
     }
 
     private cancelEventHandler = () => {
@@ -114,27 +120,87 @@ ngAfterViewInit(): void {
 
     }
 
-    private redraw() {
-      let clickX = this.clickX;
-      let context = this.Square;
+    private redraw(shapename:String) {
+      this.createUserEvents();
+     let s1=new Path2D; let s2=new Path2D; let s3=new Path2D; let s4=new Path2D; let s5=new Path2D;
+
       let clickDrag = this.clickDrag;
-      let clickY = this.clickY;
-      let x=0,y=0;
-      for (let i = 0; i < clickX.length; ++i) {
-          if (clickDrag[i] && i) {
-            context.rect(clickX[x], clickY[x],clickX[i]-clickX[x],clickY[i]-clickY[x]);
+      this.startx=this.clickX[0];
+      this.starty=this.clickY[0];
+      let width=this.clickX[0]-this.clickX[this.clickX.length-1]
+      let height=this.clickY[0]-this.clickY[this.clickY.length-1]
+      if(width<0){width*=-1;}
+      if(height<0){height*=-1;}
 
-          } else {
-            context.rect(clickX[x], clickY[x],clickX[i]-clickX[x],clickY[i]-clickY[x]);
+      switch(shapename){
+        case "circle":
+         this.putattr(this.cr,'circle',this.startx,this.starty,width,height,this.color,false,true)
+
+         s1.arc(this.startx,this.starty,width,0,Math.PI*2)
+         this.Square.stroke(s1);
+         this.Square.strokeStyle=this.color;
+
+         this.shapeslist.push(this.cr);
+         this.canvasships.push(this.Square)
+        break;
+        case "elipse":
+         this.putattr(this.el,'elipse',this.startx,this.starty,width,height, this.color,false,true)
+
+         s2.ellipse(this.startx,this.starty,width,width,0,0,Math.PI*2)
+        this.Square.stroke(s2);
+        this.Square.strokeStyle=this.color;
+
+        this.shapeslist.push(this.el);
+         this.canvasships.push(this.Square)
+        break;
+      case "rectangle":
+       this.putattr(this.re,'rectangle',this.startx,this.starty,width,height ,this.color,false,true)
+
+       s3.rect(this.startx,this.starty,width,height)
+       this.Square.stroke(s3);
+       this.Square.strokeStyle=this.color;
+
+       this.shapeslist.push(this.re);
+       this.canvasships.push(this.Square)
+      break;
+
+      case "line":
+       this.putattr(this.li,'line',this.startx,this.starty,width,height, this.color,false,true)
+
+        s4.moveTo(this.startx,this.starty)
+        s4.lineTo(this.clickX[this.clickX.length-1],this.clickY[this.clickY.length-1]);
+        this.Square.stroke(s4);
+        this.Square.strokeStyle=this.color;
+
+        this.shapeslist.push(this.li);
+        this.canvasships.push(this.Square)
+         break;
 
 
-          }
+      case "triangle":
+        this.putattr(this.tr,'triangle',this.startx,this.starty,width,height,this.color,false,true)
+        this.Square.strokeStyle = this.color;
+        s5.moveTo(this.startx, this.starty);
+        s5.lineTo(this.clickX[this.clickX.length-1],this.clickY[this.clickY.length-1]);
+        s5.lineTo(150,100);
+        s5.closePath()
+        this.Square.stroke(s5);
+        this.shapeslist.push(this.tr);
+       this.canvasships.push(this.Square)
+        break;
 
-         // context.lineTo(clickX[i], clickY[i]);
-         context.fillStyle=this.color;
-          context.stroke();
-      }
+
+
+
+   }
     }
+    UNDO(){
+
+    }
+    REDO(){
+
+    }
+    Save(){this.mycanvas.nativeElement.toDataURL}
 shapeslist=new Array()
 canvasships=new Array()
 
@@ -143,60 +209,31 @@ li=new Shape();
 tr=new Shape();
 re=new Shape();
 el=new Shape();
-shape=new Path2D;
 
  Draw(shape:String){
-
+this.selectedshape=shape;
 switch(shape){
      case "circle":
-      this.putattr(this.cr,'circle',this.startx,this.starty,this.color,false,true)
-      this.circle.strokeStyle=this.color;
-      this.shape.arc(this.startx,this.starty,50,0,Math.PI*2)
-      this.circle.stroke(this.shape);
-      this.shapeslist.push(this.cr);
-      this.canvasships.push(this.circle)
+     this.redraw("circle");
      break;
      case "elipse":
-      this.putattr(this.el,'elipse',this.startx,this.starty,this.color,false,true)
+      this.redraw("elipse");
 
-      this.elipse.fillStyle=this.color;
-      this.shape.ellipse(this.startx,this.starty,50,70,0,0,Math.PI*2)
-     this.elipse.stroke(this.shape);
-     this.shapeslist.push(this.el);
-      this.canvasships.push(this.elipse)
      break;
    case "rectangle":
-    this.putattr(this.re,'rectangle',this.startx,this.starty,this.color,false,true)
+    this.redraw("rectangle");
 
-    this.rectangle.fillStyle=this.color;
-    this.shape.rect(this.startx,this.starty,50,60)
-    this.rectangle.stroke(this.shape);
-    this.shapeslist.push(this.re);
-    this.canvasships.push(this.rectangle)
-   break;
+    break;
 
    case "line":
-    this.putattr(this.li,'line',this.startx,this.starty,this.color,false,true)
+    this.redraw("line");
 
-    this.line.fillStyle=this.color;
-     this.shape.moveTo(this.startx,this.starty)
-     this.shape.lineTo(100,200);
-     this.line.stroke(this.shape);
-     this.shapeslist.push(this.li);
-     this.canvasships.push(this.line)
       break;
 
-
    case "triangle":
-     this.putattr(this.tr,'triangle',this.startx,this.starty,this.color,false,true)
-     this.triangle.strokeStyle = this.color;
-     this.shape.moveTo(this.startx, this.starty);
-     this.shape.lineTo(100, 150);
-    this.shape.lineTo(150,100);
-    this.shape.closePath()
-     this.triangle.stroke(this.shape);
-     this.shapeslist.push(this.tr);
-    this.canvasships.push(this.triangle)
+    this.redraw("triangle");
+
+
      break;
 
 
@@ -207,11 +244,13 @@ switch(shape){
 
 }
 
-putattr(sh:Shape,name:string,x:Number,y:Number,color:string,sel:boolean,draw:boolean){
+putattr(sh:Shape,name:string,x:Number,y:Number,w:Number,h:Number, color:string,sel:boolean,draw:boolean){
   sh.setname(name)
   sh.setcolor(color)
   sh.setcx(x) ;
   sh.setcy(y);
+  sh.setwidth(w) ;
+  sh.setheight(h);
   sh.setisdraw(sel);
   sh.setisdraw(draw)
   return sh;

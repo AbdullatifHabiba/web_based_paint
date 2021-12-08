@@ -1,17 +1,22 @@
 <body>
   <div id="toolbar">
-  <input type="button" name="line" value="line"   (click)="Draw('line')"/>
-  <input   type="button" name="elipse" value="elipse"   (click)="Draw('elipse')"/>
-  <input  type="button" name="line"value="circle"    (click)="send()" (click)="Draw('circle')"/>
-  <input  type="button" name="rectangle" value="rectangle"   (click)="Draw('rectangle')"/>
-  <input  type="button" name="triangle" value="triangle"   (click)="Draw('triangle')"/>
-  <input type="color" id="coloricon" [(ngModel)]="color" />
-  <input type="button" name="clear" value="clear"   (click)="clearCanvas()"/>
+    <input type="button"(click)="Save()">
+    <input type="color" id="coloricon" [(ngModel)]="color" />
+
+  <input type="radio" name="toolbar" value="line"   (click)="Draw('line')"/><span>line</span>
+  <input   type="radio" name="toolbar" value="elipse"   (click)="Draw('elipse')"/><span>Elipse</span>
+  <input  type="radio" name="toolbar" value="rectangle"   (click)="Draw('rectangle')"/><span>Rectangle</span>
+  <input  type="radio" name="toolbar" value="triangle"   (click)="Draw('triangle')"/><span>Triangle</span>
+  <input  type="radio" name="toolbar" value="circle"   (click)="Draw('circle')"/><span>Circle</span>
+
+  <input type="radio" name="toolbar" value="clear"   (click)="clearCanvas()"/><span>clear</span>
+  <input type="radio" name="toolbar" value="clear"   (click)="UNDO()"/><span>undo</span>
+  <input type="radio" name="toolbar" value="clear"   (click)="REDO()"/><span>redo</span>
 
 </div>
   <br>
 
-<canvas  appcanvas #canvas id="canvas">
+<canvas  #canvas id="canvas">
 
 </canvas>
 

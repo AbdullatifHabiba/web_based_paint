@@ -13,16 +13,16 @@ import org.springframework.stereotype.Component;
 public class drawingcompnents  {
 	ArrayList<Shape> Shapeslist;
 @GetMapping("/circle")
-Shape createcircle(Circle circle, @RequestParam String[] sentobj) {
+Shape createcircle(Circle circle, @RequestParam Object sentobj) {
 	System.out.println("circle");
 
-	circle.name="circle";
-	circle.x=Integer.valueOf(sentobj[0]);
-	circle.y=Integer.valueOf(sentobj[1]);
-	circle.radius=Integer.valueOf(sentobj[2]);
-	circle.color=sentobj[3];
-	circle.isDraw=Boolean.valueOf(sentobj[4]);
-	circle.isFilled=Boolean.valueOf(sentobj[4]);
+	circle.name=sentobj.name;
+	circle.x=sentobj.x;
+	circle.y=sentobj.y;
+	circle.radius=sentobj.r;
+	circle.color=sentobj.color;
+	circle.isDraw=sentobj.isselected;
+	circle.isFilled=sentobj.istodraw;
 	Shapeslist.add(circle);
 	System.out.print(circle.color);
 	return circle;
