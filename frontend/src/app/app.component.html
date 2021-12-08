@@ -1,16 +1,17 @@
 <body>
   <div id="toolbar">
   <input type="button" name="line" value="line"   (click)="Draw('line')"/>
+  <input   type="button" name="elipse" value="elipse"   (click)="Draw('elipse')"/>
+  <input  type="button" name="line"value="circle"    (click)="send()" (click)="Draw('circle')"/>
+  <input  type="button" name="rectangle" value="rectangle"   (click)="Draw('rectangle')"/>
+  <input  type="button" name="triangle" value="triangle"   (click)="Draw('triangle')"/>
+  <input type="color" id="coloricon" [(ngModel)]="color" />
+  <input type="button" name="clear" value="clear"   (click)="clearCanvas()"/>
 
-  <input #shap  type="button" name="elipse" value="elipse"   (click)="Draw('elipse')"/>
-  <input #shap type="button" name="line"value="circle"    (click)="send()"/>
-  <input #shap type="button" name="rectangle" value="rectangle"   (click)="Draw('rectangle')"/>
-  <input #shap type="button" name="triangle" value="triangle"   (click)="Draw('triangle')"/>
-  <input type="color" id="coloricon" [(ngModel)]="colors" />
 </div>
   <br>
 
-<canvas #canvas>
+<canvas  appcanvas #canvas id="canvas">
 
 </canvas>
 

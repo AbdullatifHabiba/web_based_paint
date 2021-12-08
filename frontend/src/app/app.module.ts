@@ -5,10 +5,11 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { canvasDirective } from './canvas.directive';
 
 @NgModule({
   declarations: [
-    AppComponent,
+    AppComponent,canvasDirective
   ],
   imports: [
     BrowserModule,FormsModule,
