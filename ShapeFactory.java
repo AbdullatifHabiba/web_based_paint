@@ -90,4 +90,11 @@ public class ShapeFactory {
         }
         drawingcompnents.Shapeslist.add(a);
     }
+
+    void RremoveShape(int id){
+        for (int i = 0;i < drawingcompnents.Shapeslist.size();i++){
+            if(id == drawingcompnents.Shapeslist.get(i).id)
+                drawingcompnents.Shapeslist.remove(i);
+        }
+    }
 }

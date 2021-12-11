@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -29,7 +30,8 @@ public class drawingcompnents{
 
 
 	static ArrayList<Shape> Shapeslist;
-	ArrayList<Shape> Undone;
+	static ArrayList<String> instructions;
+	ArrayList<String> Redo;
 	ShapeFactory factory = new ShapeFactory();
 	FileBuilder builder ;
 	JSONArray ShapesJson = new JSONArray();
@@ -41,13 +43,59 @@ public class drawingcompnents{
 		ObjectMapper objectMapper = new ObjectMapper();
 		Object jsontoObject = objectMapper.readValue(sentobj.toString(),Object.class);
 		System.out.println(sentobj);
-		Shapeslist.add(factory.create(jsontoObject));
+		Shape a = factory.create(jsontoObject);
+		Shapeslist.add(a);
+		StringBuffer instruction = new StringBuffer("{create,");
+		instruction.append(a.id);
+		instruction.append("}");
+		String b = instruction.toString();
+		instructions.add(b);
 	}
 
 	@GetMapping("/Undo")
 	JSONObject undo() throws JSONException {
-		Undone.add(Shapeslist.get(Shapeslist.size() - 1));
-		Shapeslist.remove(Shapeslist.size() - 1);
+		String a = instructions.get(instructions.size() - 1);
+		Redo.add(0, instructions.get(instructions.size() - 1));
+		instructions.remove(instructions.size() - 1);
+		String[] b = a.replaceAll("\\{|\\}", "").split(",");
+		if (b[0].equalsIgnoreCase("create")){
+			int id = Integer.parseInt(b[1]);
+			factory.RremoveShape(id);
+		}
+		else if (b[0].equalsIgnoreCase("copy")){
+			int id = Integer.parseInt(b[2]);
+			factory.RremoveShape(id);
+		}
+		else if (b[0].equalsIgnoreCase("move")){
+			int id = Integer.parseInt(b[1]);
+			Point position = new Point();
+			position.x = Integer.parseInt(b[4]);
+			position.y = Integer.parseInt(b[5]);
+			Shape.move(id, position);
+			instructions.remove(instructions.size() - 1);
+		}
+		else if (b[0].equalsIgnoreCase("resize")){
+			Shape a = factory.GetShape(Integer.parseInt(b[1]));
+			switch (a.getType()){
+				case "Circle":
+					Circle.Resize(Integer.parseInt(b[1]), Integer.parseInt(b[2]));
+					break;
+				case "Elipse":
+					Elipse.Resize(Integer.parseInt(b[1]), Integer.parseInt(b[2]), Integer.parseInt(b[3]));
+					break;
+				case "Line":
+					Line.Resize(Integer.parseInt(b[1]), Integer.parseInt(b[2]), Integer.parseInt(b[3]));
+					break;
+				case "Polygon":
+					Polygon.Resize(Integer.parseInt(b[1]), b[2]);
+					break;
+				case "Rectangle":
+					Rectangle.Resize(Integer.parseInt(b[1]), Integer.parseInt(b[2]), Integer.parseInt(b[3]));
+					break;
+				default:
+					break;
+			}
+		}
 		return new FileBuilder(Shapeslist).jsonBuilder();
 	}
 

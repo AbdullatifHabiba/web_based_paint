@@ -1,7 +1,10 @@
 package com.example.springboot;
 
+import javax.swing.text.Position;
 import java.awt.*;
 import java.util.ArrayList;
+
+import static com.example.springboot.drawingcompnents.instructions;
 
 public abstract class Shape {
 
@@ -50,19 +53,40 @@ public abstract class Shape {
 		this.position = position;
 	}
 
-	ShapeFactory Factory = new ShapeFactory();
+	static ShapeFactory Factory = new ShapeFactory();
 
-	void move(int id, Point position){
+	static void move(int id, Point position){
 		Shape a = Factory.GetShape(id);
+		Point first = a.getPosition();
 		a.position = position;
 		Factory.EditShape(a);
+		StringBuffer instruction = new StringBuffer("{move,");
+		instruction.append(id);
+		instruction.append(',');
+		instruction.append(position.x);
+		instruction.append(',');
+		instruction.append(position.y);
+		instruction.append(',');
+		instruction.append(first.x);
+		instruction.append(',');
+		instruction.append(first.y);
+		instruction.append('}');
+		instructions.add(instruction.toString());
 	}
 
 	void copy(int id, int new_id, Point position) {
 		Shape a = Factory.GetShape(id);
-		a.id = new_id;
-		a.position = position;
+		a.setId(new_id);
+		a.setPosition(position);
 		Factory.EditShape(a);
+		StringBuffer instruction = new StringBuffer("{copy,");
+		instruction.append(id);
+		instruction.append(',');
+		instruction.append(new_id);
+		instruction.append(',');
+		instruction.append(position);
+		instruction.append(',');
+		instructions.add(instruction.toString());
 	}
 
 }

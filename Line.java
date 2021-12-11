@@ -2,50 +2,52 @@ package com.example.springboot;
 
 import java.util.ArrayList;
 
+import static com.example.springboot.drawingcompnents.instructions;
+
 public class Line extends Shape {
 
-	protected int x1, x2, y1, y2;
+	protected int x, y;
 
 	public Line() {
 		super();
-		x1 = 0;
-		x2 = 0;
-		y1 = 0;
-		y2 = 0;
+		x = 0;
+		y = 0;
 	}
 
-	public int getX1() {
-		return x1;
+	public int getX() {
+		return x;
 	}
 
-	public void setX1(int x1) {
-		this.x1 = x1;
+	public void setX(int x) {
+		this.x = x;
 	}
 
-	public int getX2() {
-		return x2;
+	public int getY() {
+		return y;
 	}
 
-	public void setX2(int x2) {
-		this.x2 = x2;
+	public void setY(int y) {
+		this.y = y;
 	}
 
-	public int getY1() {
-		return y1;
+	static void Resize(int id, int x, int y){
+		Line a = (Line) Factory.GetShape(id);
+		int oldx = a.getX();
+		int oldy = a.getY();
+		a.setX(x);
+		a.setY(y);
+		Factory.EditShape(a);
+		StringBuffer instruction = new StringBuffer("{resize,");
+		instruction.append(id);
+		instruction.append(',');
+		instruction.append(oldx);
+		instruction.append(',');
+		instruction.append(oldy);
+		instruction.append(',');
+		instruction.append(x);
+		instruction.append(',');
+		instruction.append(y);
+		instruction.append('}');
+		instructions.add(instruction.toString());
 	}
-
-	public void setY1(int y1) {
-		this.y1 = y1;
-	}
-
-	public int getY2() {
-		return y2;
-	}
-
-	public void setY2(int y2) {
-		this.y2 = y2;
-	}
-
-
-
 }
